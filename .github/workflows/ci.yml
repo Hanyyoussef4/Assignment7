@@ -22,13 +22,12 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            --file MODULE7_IS601/Dockerfile \
+            --file Dockerfile \
             --tag qr-code-generator-app:test \
-            MODULE7_IS601
+            .
 
       - name: Install dependencies & Run tests
         run: |
-          cd MODULE7_IS601
           python -m pip install --upgrade pip
           pip install -r requirements.txt pytest pytest-cov
           pytest --cov=.
@@ -38,4 +37,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: MODULE7_IS601/.coverage
+          path: .coverage
