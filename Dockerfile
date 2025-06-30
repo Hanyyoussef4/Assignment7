@@ -1,28 +1,28 @@
-# Use the official Python image from the Python Docker Hub repository as the base image
+# Use the official Python image
 FROM python:3.12-slim-bullseye
 
-# Set the working directory to /app in the container
+# 1. Set the working directory
 WORKDIR /app
 
-# Create a non-root user named 'myuser' with a home directory
+# 2. Create the qr_codes directory (and logs if you like) and make it world-writable
+RUN mkdir -p qr_codes \
+ && chmod 777 qr_codes
 
-# Copy the requirements.txt file to the container to install Python dependencies
+# 3. Copy only requirements first and install dependencies
 COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Install the Python packages specified in requirements.txt
-RUN useradd -m myuser && pip install --no-cache-dir -r requirements.txt && \
-    mkdir logs qr_codes && chown myuser:myuser logs qr_codes
-# Before copying the application code, create the logs and qr_codes directories
-# and ensure they are owned by the non-root user
+# 4. Create a non-root user and any other directories your app needs
+RUN useradd -m myuser \
+ && mkdir -p logs \
+ && chown myuser:myuser logs
 
-# Copy the rest of the application's source code into the container, setting ownership to 'myuser'
+# 5. Copy your application code into the container, preserving ownership
 COPY --chown=myuser:myuser . .
 
-# Switch to the 'myuser' user to run the application
+# 6. Switch to the non-root user
 USER myuser
 
-# Use the Python interpreter as the entrypoint and the script as the first argument
-# This allows additional command-line arguments to be passed to the script via the docker run command
+# 7. Entrypoint & default command
 ENTRYPOINT ["python", "main.py"]
-# this sets a default argument, its also set in the program but this just illustrates how to use cmd and override it from the terminal
-CMD ["--url","http://github.com/kaw393939"]
+CMD ["--url", "http://github.com/kaw393939"]
