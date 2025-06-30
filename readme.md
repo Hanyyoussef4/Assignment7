@@ -1,264 +1,260 @@
-# 📦 Project Setup
+# 🚀 QR Code Generator App
+
+A simple CLI utility and Dockerized application that generates two QR codes—one for your GitHub repository and one for your Docker Hub image—overwriting old codes each time it runs. Ideal for sharing quick links to your project.
 
 ---
 
-# 🧩 1. Install Homebrew (Mac Only)
+## 📋 Table of Contents
 
-> Skip this step if you're on Windows.
+1. [Features](#features)
+2. [Prerequisites](#prerequisites)
+3. [Installation](#installation)
+4. [Usage](#usage)
 
-Homebrew is a package manager for macOS.  
-You’ll use it to easily install Git, Python, Docker, etc.
-
-**Install Homebrew:**
-
-```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-
-**Verify Homebrew:**
-
-```bash
-brew --version
-```
-
-If you see a version number, you're good to go.
+   * [Host (Local)](#host-local)
+   * [Docker](#docker)
+5. [Testing & Coverage](#testing--coverage)
+6. [Configuration](#configuration)
+7. [Development & Contribution](#development--contribution)
+8. [Academic Integrity](#academic-integrity)
 
 ---
 
-# 🧩 2. Install and Configure Git
+## ✨ Features
 
-## Install Git
-
-- **MacOS (using Homebrew)**
-
-```bash
-brew install git
-```
-
-- **Windows**
-
-Download and install [Git for Windows](https://git-scm.com/download/win).  
-Accept the default options during installation.
-
-**Verify Git:**
-
-```bash
-git --version
-```
+* Generates **two** QR codes (`github_qr.png` and `docker_qr.png`) in a configurable output directory.
+* **Overwrites** existing codes on each run to keep your folder clean.
+* Supports **dual-URL mode** via CLI flags `--github` and `--docker`, or environment variables.
+* **Colour customization** using `FILL_COLOR` and `BACK_COLOR` (defaults: red on white).
+* **Dockerized** for consistent behavior across environments.
+* **Comprehensive tests** with pytest and Docker smoke tests, achieving >90% coverage.
 
 ---
 
-## Configure Git Globals
+## 🛠️ Prerequisites
 
-Set your name and email so Git tracks your commits properly:
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "your_email@example.com"
-```
-
-Confirm the settings:
-
-```bash
-git config --list
-```
+* **Python 3.10+**
+* **pip**
+* **Docker** (for container usage)
 
 ---
 
-## Generate SSH Keys and Connect to GitHub
+## 📥 Installation
 
-> Only do this once per machine.
+1. **Clone the repository**
 
-1. Generate a new SSH key:
+   ```bash
+   git clone https://github.com/Hanyyoussef4/Assignment7.git
+   cd Assignment7
+   ```
 
-```bash
-ssh-keygen -t ed25519 -C "your_email@example.com"
-```
+2. **Create & activate a virtual environment** (optional but recommended)
 
-(Press Enter at all prompts.)
+   ```bash
+   python3 -m venv .venv  # macOS/Linux
+   source .venv/bin/activate
+   # Windows
+   .\.venv\Scripts\activate
+   ```
 
-2. Start the SSH agent:
+3. **Install Python dependencies**
 
-```bash
-eval "$(ssh-agent -s)"
-```
-
-3. Add the SSH private key to the agent:
-
-```bash
-ssh-add ~/.ssh/id_ed25519
-```
-
-4. Copy your SSH public key:
-
-- **Mac/Linux:**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | pbcopy
-```
-
-- **Windows (Git Bash):**
-
-```bash
-cat ~/.ssh/id_ed25519.pub | clip
-```
-
-5. Add the key to your GitHub account:
-   - Go to [GitHub SSH Settings](https://github.com/settings/keys)
-   - Click **New SSH Key**, paste the key, save.
-
-6. Test the connection:
-
-```bash
-ssh -T git@github.com
-```
-
-You should see a success message.
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
 
 ---
 
-# 🧩 3. Clone the Repository
+## 💻 Usage
 
-Now you can safely clone the course project:
+### Host (Local)
+
+Generate both QR codes in one go:
 
 ```bash
-git clone <repository-url>
-cd <repository-directory>
+python main.py \
+  --github https://github.com/Hanyyoussef4/Assignment7 \
+  --docker https://hub.docker.com/r/hany25/qr-code-generator-app
 ```
 
----
-
-# 🛠️ 4. Install Python 3.10+
-
-## Install Python
-
-- **MacOS (Homebrew)**
+Or rely on defaults (baked into the script):
 
 ```bash
-brew install python
-```
-
-- **Windows**
-
-Download and install [Python for Windows](https://www.python.org/downloads/).  
-✅ Make sure you **check the box** `Add Python to PATH` during setup.
-
-**Verify Python:**
-
-```bash
-python3 --version
-```
-or
-```bash
-python --version
-```
-
----
-
-## Create and Activate a Virtual Environment
-
-(Optional but recommended)
-
-```bash
-python3 -m venv venv
-source venv/bin/activate   # Mac/Linux
-venv\Scripts\activate.bat  # Windows
-```
-
-### Install Required Packages
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-# 🐳 5. (Optional) Docker Setup
-
-> Skip if Docker isn't used in this module.
-
-## Install Docker
-
-- [Install Docker Desktop for Mac](https://www.docker.com/products/docker-desktop/)
-- [Install Docker Desktop for Windows](https://www.docker.com/products/docker-desktop/)
-
-## Build Docker Image
-
-```bash
-docker build -t <image-name> .
-```
-
-## Run Docker Container
-
-```bash
-docker run -it --rm <image-name>
-```
-
----
-
-# 🚀 6. Running the Project
-
-- **Without Docker**:
-
-```bash
+export GITHUB_URL="https://github.com/Hanyyoussef4/Assignment7"
+export DOCKER_URL="https://hub.docker.com/r/hany25/qr-code-generator-app"
 python main.py
 ```
 
-(or update this if the main script is different.)
+Generated files:
 
-- **With Docker**:
+```
+qr_codes/github_qr.png
+qr_codes/docker_qr.png
+```
+
+### Docker
+
+#### Build & Push to Docker Hub
+
+1. **Log in** to Docker Hub:
+
+   ```bash
+   docker login
+   ```
+2. **Build** the image and tag it for your Hub repository:
+
+   ```bash
+   docker build -t hany25/qr-code-generator-app:latest .
+   ```
+3. **Push** the image to your Docker Hub repository:
+
+   ```bash
+   docker push hany25/qr-code-generator-app:latest
+   ```
+
+   > **What is `docker push`?**
+   > The `docker push` command uploads your local Docker image (tagged with your repository name) to Docker Hub, so it can be downloaded and run by others. Without pushing, the image only exists on your machine.
+
+#### Running the Container Locally
+
+Build locally (optional) or pull from Hub:
 
 ```bash
-docker run -it --rm <image-name>
+# If you just pushed, pull latest
+docker pull hany25/qr-code-generator-app:latest
+```
+
+Run the container (mounting local `qr_codes` for output):
+
+```bash
+docker run --rm \
+  -v "$(pwd)/qr_codes:/app/qr_codes" \
+  hany25/qr-code-generator-app:latest \
+  --github https://github.com/Hanyyoussef4/Assignment7 \
+  --docker https://hub.docker.com/r/hany25/qr-code-generator-app
+```
+
+Or use Docker Compose:
+
+```yaml
+services:
+  qrgen:
+    image: hany25/qr-code-generator-app:latest
+    volumes:
+      - ./qr_codes:/app/qr_codes
+    environment:
+      GITHUB_URL: https://github.com/Hanyyoussef4/Assignment7
+      DOCKER_URL: https://hub.docker.com/r/hany25/qr-code-generator-app
+```
+
+```bash
+docker compose up
+docker compose down
+```
+
+Build the Docker image:
+
+```bash
+docker build -t qr-code-generator-app:latest .
+```
+
+Run the container (mounting local `qr_codes` for output):
+
+```bash
+docker run --rm \
+  -v "$(pwd)/qr_codes:/app/qr_codes" \
+  qr-code-generator-app:latest \
+  --github https://github.com/Hanyyoussef4/Assignment7 \
+  --docker https://hub.docker.com/r/hany25/qr-code-generator-app
+```
+
+Or use Docker Compose:
+
+```yaml
+services:
+  qrgen:
+    build: .
+    volumes:
+      - ./qr_codes:/app/qr_codes
+    environment:
+      GITHUB_URL: https://github.com/Hanyyoussef4/Assignment7
+      DOCKER_URL: https://hub.docker.com/r/hany25/qr-code-generator-app
+```
+
+```bash
+docker compose up --build
+docker compose down
 ```
 
 ---
 
-# 📝 7. Submission Instructions
+## 🧪 Testing & Coverage
 
-After finishing your work:
+Tests are written with **pytest** and include:
+
+* **Unit tests** (`tests/test_main.py`) validating URL parsing, colour conversion, file overwrite logic.
+* **Docker smoke test** (`tests/test_dockerfile.py`) ensuring the container generates both QR codes.
+
+Run all tests with coverage report:
 
 ```bash
-git add .
-git commit -m "Complete Module X"
-git push origin main
+pytest --maxfail=1 --disable-warnings --cov=.
 ```
 
-Then submit the GitHub repository link as instructed.
+Generate an HTML coverage report:
+
+```bash
+pytest --cov=.
+pytest --cov-report=html
+open htmlcov/index.html
+```
+
+Aim for **≥90%** coverage on `main.py`.
 
 ---
 
-# 🔥 Useful Commands Cheat Sheet
+## ⚙️ Configuration
 
-| Action                         | Command                                          |
-| ------------------------------- | ------------------------------------------------ |
-| Install Homebrew (Mac)          | `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"` |
-| Install Git                     | `brew install git` or Git for Windows installer |
-| Configure Git Global Username  | `git config --global user.name "Your Name"`      |
-| Configure Git Global Email     | `git config --global user.email "you@example.com"` |
-| Clone Repository                | `git clone <repo-url>`                          |
-| Create Virtual Environment     | `python3 -m venv venv`                           |
-| Activate Virtual Environment   | `source venv/bin/activate` / `venv\Scripts\activate.bat` |
-| Install Python Packages        | `pip install -r requirements.txt`               |
-| Build Docker Image              | `docker build -t <image-name> .`                |
-| Run Docker Container            | `docker run -it --rm <image-name>`               |
-| Push Code to GitHub             | `git add . && git commit -m "message" && git push` |
+| Variable      | Description           | Default          |
+| ------------- | --------------------- | ---------------- |
+| `GITHUB_URL`  | GitHub repository URL | *script default* |
+| `DOCKER_URL`  | Docker Hub image URL  | *script default* |
+| `QR_CODE_DIR` | Output directory      | `qr_codes`       |
+| `FILL_COLOR`  | QR foreground colour  | `red`            |
+| `BACK_COLOR`  | QR background colour  | `white`          |
+
+Colors support hex codes (`#rrggbb`) or common names (`red`, `blue`, `navy`).
 
 ---
 
-# 📋 Notes
+## 🚧 Development & Contribution
 
-- Install **Homebrew** first on Mac.
-- Install and configure **Git** and **SSH** before cloning.
-- Use **Python 3.10+** and **virtual environments** for Python projects.
-- **Docker** is optional depending on the project.
+1. Fork the repo and create a feature branch:
+
+   ```bash
+   git checkout -b feature/my-change
+   ```
+2. Make changes, add tests, ensure coverage:
+
+   ```bash
+   git add . && git commit -m 'feat: …'
+   pytest --cov=.
+   ```
+3. Push and open a Pull Request.
 
 ---
 
-# 📎 Quick Links
+## 📜 Academic Integrity
 
-- [Homebrew](https://brew.sh/)
-- [Git Downloads](https://git-scm.com/downloads)
-- [Python Downloads](https://www.python.org/downloads/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [GitHub SSH Setup Guide](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+I certify that this submission is my own work. I have neither given nor received unauthorized help on this assignment, and I have not submitted the same work in a previous course.
+
+---
+
+## 🔗 Quick Links
+
+* [Homebrew](https://brew.sh/)
+* [Python Downloads](https://www.python.org/downloads/)
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+* [pytest Documentation](https://docs.pytest.org/)
+* [GitHub Actions](https://github.com/features/actions)
