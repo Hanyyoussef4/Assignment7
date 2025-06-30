@@ -21,7 +21,7 @@ RUN useradd -m myuser \
 COPY --chown=myuser:myuser . .
 
 # 6. Switch to the non-root user
-USER myuser
+#USER myuser
 
 # 7. Entrypoint & default command
 ENTRYPOINT ["python", "main.py"]
