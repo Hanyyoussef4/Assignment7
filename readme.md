@@ -1,5 +1,8 @@
 # 🚀 QR Code Generator App
 
+![CI Status](https://github.com/Hanyyoussef4/Assignment7/actions/workflows/ci.yml/badge.svg)
+
+
 A simple CLI utility and Dockerized application that generates two QR codes—one for your GitHub repository and one for your Docker Hub image—overwriting old codes each time it runs. Ideal for sharing quick links to your project.
 
 ---
