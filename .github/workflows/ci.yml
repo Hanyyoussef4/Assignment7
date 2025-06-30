@@ -1,6 +1,15 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -11,14 +20,22 @@ jobs:
           python-version: 3.10
 
       - name: Build Docker image
-        run: docker build -t qr-code-generator-app:test .
-
-      - name: Install dependencies
         run: |
+          docker build \
+            --file MODULE7_IS601/Dockerfile \
+            --tag qr-code-generator-app:test \
+            MODULE7_IS601
+
+      - name: Install dependencies & Run tests
+        run: |
+          cd MODULE7_IS601
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pytest pytest-cov
-
-      - name: Run tests with coverage
-        run: |
+          pip install -r requirements.txt pytest pytest-cov
           pytest --cov=.
+
+      - name: Upload coverage to GitHub
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: MODULE7_IS601/.coverage
