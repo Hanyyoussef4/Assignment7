@@ -1,7 +1,7 @@
 # 🚀 QR Code Generator App
 
-![CI Status](https://github.com/Hanyyoussef4/Assignment7/actions/workflows/ci.yml/badge.svg)
-
+[![CI Status](https://github.com/Hanyyoussef4/Assignment7/actions/workflows/ci.yml/badge.svg)](https://github.com/Hanyyoussef4/Assignment7/actions/workflows/ci.yml)
+[![Docker Hub](https://img.shields.io/docker/v/hany25/qr-code-generator-app?label=docker%20hub)](https://hub.docker.com/r/hany25/qr-code-generator-app)
 
 A robust CLI tool and Dockerized application that generates two QR codes—one linking to your GitHub repository and one to your Docker Hub image—automatically overwriting previous codes on each run. Perfect for seamlessly sharing your project endpoints.
 
@@ -16,6 +16,7 @@ A robust CLI tool and Dockerized application that generates two QR codes—one l
 
    * [Local (Host)](#local-host)
    * [Docker](#docker)
+   * [Docker Compose](#via-docker-compose)
 5. [Testing & Coverage](#testing--coverage)
 6. [Configuration](#configuration)
 7. [CI/CD Workflow](#cicd-workflow)
@@ -31,7 +32,7 @@ A robust CLI tool and Dockerized application that generates two QR codes—one l
 * **Flexible Inputs**: Accepts URLs via CLI flags (`--github`, `--docker`) or environment variables.
 * **Color Customization**: `FILL_COLOR` and `BACK_COLOR` support named colors or hex codes (default: red on white).
 * **Docker-Ready**: Fully containerized for consistent performance across environments.
-* **Comprehensive Testing**: Unit and smoke tests ensure ≥90% coverage on core functionality.
+* **Comprehensive Testing**: Unit and smoke tests ensure ≥ 90% coverage on core functionality.
 
 ---
 
@@ -53,7 +54,7 @@ cd Assignment7
 # (Optional) Create & activate a virtual environment
 python3 -m venv .venv
 source .venv/bin/activate    # macOS/Linux
-# .\.venv\Scripts\activate  # Windows
+# .\.venv\Scripts\activate   # Windows
 
 # Install Python dependencies
 pip install --upgrade pip
@@ -74,7 +75,7 @@ python main.py \
   --docker https://hub.docker.com/r/hany25/qr-code-generator-app
 ```
 
-Or use built-in defaults:
+Or rely on environment variables:
 
 ```bash
 export GITHUB_URL=https://github.com/Hanyyoussef4/Assignment7
@@ -82,7 +83,7 @@ export DOCKER_URL=https://hub.docker.com/r/hany25/qr-code-generator-app
 python main.py
 ```
 
-**Output directory:**
+**Output directory structure:**
 
 ```
 qr_codes/
@@ -92,33 +93,36 @@ qr_codes/
 
 ### Docker
 
-1. **Build & Tag**
+1. **Pull** from Docker Hub
 
    ```bash
+   docker pull hany25/qr-code-generator-app:latest
    ```
 
-docker build -t hany25/qr-code-generator-app\:latest .
-
-````
-2. **Push** to Docker Hub
-   ```bash
-docker push hany25/qr-code-generator-app:latest
-````
-
-3. **Run**
+2. **Build & Tag** (if making local changes)
 
    ```bash
+   docker build -t hany25/qr-code-generator-app:latest .
    ```
 
-docker run --rm&#x20;
--v "\$(pwd)/qr\_codes\:/app/qr\_codes"&#x20;
-hany25/qr-code-generator-app\:latest&#x20;
-\--github [https://github.com/Hanyyoussef4/Assignment7](https://github.com/Hanyyoussef4/Assignment7)&#x20;
-\--docker [https://hub.docker.com/r/hany25/qr-code-generator-app](https://hub.docker.com/r/hany25/qr-code-generator-app)
+3. **Push** to Docker Hub
 
-````
+   ```bash
+   docker push hany25/qr-code-generator-app:latest
+   ```
 
-**Via Docker Compose**
+4. **Run**
+
+   ```bash
+   docker run --rm \
+     -v "$(pwd)/qr_codes":/app/qr_codes \
+     hany25/qr-code-generator-app:latest \
+     --github "https://github.com/Hanyyoussef4/Assignment7" \
+     --docker "https://hub.docker.com/r/hany25/qr-code-generator-app"
+   ```
+
+### Via Docker Compose
+
 ```yaml
 services:
   qrgen:
@@ -128,7 +132,7 @@ services:
     environment:
       GITHUB_URL: https://github.com/Hanyyoussef4/Assignment7
       DOCKER_URL: https://hub.docker.com/r/hany25/qr-code-generator-app
-````
+```
 
 ```bash
 docker compose up
@@ -140,7 +144,7 @@ docker compose down
 ## 🧪 Testing & Coverage
 
 * **Unit Tests:** `tests/test_main.py` validates URL parsing, color parsing, and overwrite logic.
-* **Docker Smoke Test:** `tests/test_dockerfile.py` ensures container yields both QR codes.
+* **Docker Smoke Test:** `tests/test_dockerfile.py` ensures the container generates both QR codes.
 
 Run tests with coverage:
 
@@ -155,7 +159,7 @@ pytest --cov-report=html
 open htmlcov/index.html
 ```
 
-Aim for **≥90%** coverage on `main.py`.
+Aim for **≥ 90%** coverage on `main.py`.
 
 ---
 
@@ -175,7 +179,7 @@ Supports named colors or hex codes.
 
 ## 🔄 CI/CD Workflow
 
-This repository uses GitHub Actions for automated testing and Docker builds. See the status badge at the top for current health. The workflow `.github/workflows/ci.yml`:
+This repository uses GitHub Actions for automated testing and Docker builds. See the status badge at the top for current health. The workflow file is located at `.github/workflows/ci.yml`.
 
 ```yaml
 name: CI
@@ -186,14 +190,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
-        with: python-version: '3.10'
+        with:
+          python-version: '3.12'
       - run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-      - run: pytest --maxfail=1 --disable-warnings --cov=.
-      - run: docker build -t qr-code-generator-app:ci .
+          docker build -t qr-code-generator-app:test .
+      - run: |
+          pytest --maxfail=1 --disable-warnings --cov=.
 ```
-
 
 ---
 
@@ -201,6 +204,10 @@ jobs:
 
 * [GitHub Repository](https://github.com/Hanyyoussef4/Assignment7)
 * [Docker Hub Image](https://hub.docker.com/r/hany25/qr-code-generator-app)
-* [Homebrew](https://brew.sh/)
 * [pytest Documentation](https://docs.pytest.org/)
 * [GitHub Actions](https://github.com/features/actions)
+* [Homebrew](https://brew.sh/)
+
+---
+
+*Happy QR’ing!*
