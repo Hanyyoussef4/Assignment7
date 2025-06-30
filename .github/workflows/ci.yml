@@ -33,9 +33,9 @@ jobs:
           pip install -r requirements.txt pytest pytest-cov
           pytest --cov=.
 
-      - name: Upload coverage to GitHub
-        if: success()
-        uses: actions/upload-artifact@v3
+      - name: Upload coverage artifact
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: MODULE7_IS601/.coverage
