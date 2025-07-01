@@ -33,6 +33,7 @@ A robust CLI tool and Dockerized application that generates two QR codes—one l
 * **Color Customization**: `FILL_COLOR` and `BACK_COLOR` support named colors or hex codes (default: red on white).
 * **Docker-Ready**: Fully containerized for consistent performance across environments.
 * **Comprehensive Testing**: Unit and smoke tests ensure ≥ 90% coverage on core functionality.
+* **Reflection Document**: Unit and smoke tests ensure ≥ 90% coverage on core functionality.
 
 ---
 
